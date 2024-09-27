@@ -102,7 +102,7 @@ struct ShowedCard
 
 Card *table[5];
 
-int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet); //TO BE DEFINED !!!
+int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet); //TO BE DEFINED in MAIN SOURCE! This is the playing algorithm the user wants to use.
 
 void printCard(struct Card *card)
 {
