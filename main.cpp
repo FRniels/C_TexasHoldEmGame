@@ -5,29 +5,29 @@
 
 enum WHO
 {
-    BLOB,
-    SHREK,
-    STEVEN,
-    IK
+    VEERLE,
+    INE,
+    LUC,
+    NIELS
 };
 
 int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet)
 {
     switch (player->ID)
     {
-    case BLOB:
+    case VEERLE:
         return 0; //Call
         break;
-    case SHREK:
+    case INE:
         return 5; //Raise 5
         break;
-    case STEVEN:
+    case LUC:
         return -1; //Fold
         break;
-    case IK:
+    case NIELS:
     {
         PokerRank myRank = getMyHandRank(player->hand);
-        if (myRank.category >= TWO_PAIR) //Heb ik een TWO PAIR of meer vast ?
+        if (myRank.category >= TWO_PAIR) //Heb NIELS een TWO PAIR of meer vast ?
         {
             return 10; //Raise 10
         }
@@ -46,24 +46,26 @@ int main(void)
 {
     Game gg;
 
-    Player blob;
-    blob.ID = BLOB;
-    strcpy(blob.name, "Blob");
-    Player shrek;
-    shrek.ID = SHREK;
-    strcpy(shrek.name, "Shrek");
-    Player steven;
-    steven.ID = STEVEN;
-    strcpy(steven.name, "Steven");
-    Player ikke;
-    ikke.ID = IK;
-    strcpy(ikke.name, "DIT BEN IK !!!");
+    Player veerle;
+    veerle.ID = VEERLE;
+    strcpy(veerle.name, "veerle");
+    Player ine;
+    ine.ID = INE;
+    strcpy(ine.name, "ine");
+    Player luc;
+    luc.ID = LUC;
+    strcpy(luc.name, "luc");
+    Player niels;
+    niels.ID = NIELS;
+    strcpy(niels.name, "niels");
 
-    addPlayerToGame(&gg, &blob);
-    addPlayerToGame(&gg, &shrek);
-    addPlayerToGame(&gg, &steven);
-    addPlayerToGame(&gg, &ikke);
+    // Add players to the game before starting a game.
+    addPlayerToGame(&gg, &veerle);
+    addPlayerToGame(&gg, &ine);
+    addPlayerToGame(&gg, &luc);
+    addPlayerToGame(&gg, &niels);
 
+    // Create a new card deck and start the game.
     makeNewDeck(&gg);
     playGame(&gg, 1);
 
