@@ -3,6 +3,9 @@
 #include <string.h>
 #include "texasholdem.h"
 
+#define FOLD -1
+#define CALL 0
+
 enum WHO
 {
     VEERLE,
@@ -11,31 +14,71 @@ enum WHO
     NIELS
 };
 
+// Note: Veerle seems the one to be winning most of the time!
 int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet)
 {
+    PokerRank rank = getMyHandRank(player->hand);
+
     switch (player->ID)
     {
-    case VEERLE:
-        return 0; //Call
-        break;
-    case INE:
+    case VEERLE: // Quick folder
+        if (rank.category < STRAIGHT)
+        {
+            return FOLD;
+        }
+        else if (rank.category >= STRAIGHT && rank.category < FULL_HOUSE)
+        {
+            return CALL;
+        }
+        else
+        {
+            return 25;
+        }
+    case INE: // Bluffer: A high raise on an empty table, otherwise follow the high bet in all situations unless the hand is actually a good hand.
         if (table[0] == nullptr)
         {
-            return 26; // ALWAYS BLUFFING ON AN EMPTY TABLE, UNLESS THE HAND IS GOOD BY CHANCE
+            return 25; // ALWAYS BLUFFING ON AN EMPTY TABLE, UNLESS THE HAND IS GOOD BY CHANCE
         }
+        else
+        {
+            if (rank.category >= FLUSH)
+            {
+                return 25;
+            }
 
-        return 5; //Raise 5
-        break;
-    case LUC:
-        return -1; //Fold
-        break;
-    case NIELS:
+            return CALL;
+        }
+    case LUC: // Incremental better
+        switch (rank.category)
+        {
+        case HIGH_CARD:
+            return CALL;
+        case ONE_PAIR:
+            return 1;
+        case TWO_PAIR:
+            return 2;
+        case THREE_OF_A_KIND:
+            return 3;
+        case STRAIGHT:
+            return 4;
+        case FLUSH:
+            return 5;
+        case FULL_HOUSE:
+            return 6;
+        case FOUR_OF_A_KIND:
+            return 7;
+        case STRAIGHT_FLUSH:
+            return 8;
+        default:
+            return CALL;
+        }
+    case NIELS: // Semi random strategy
     {
-        PokerRank rank = getMyHandRank(player->hand);
+        // PokerRank rank = getMyHandRank(player->hand);
 
         if (rank.category < TWO_PAIR)
         {
-            return -1;
+            return FOLD;
         }
         else if (rank.category <= STRAIGHT)
         {
@@ -45,11 +88,11 @@ int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet
             {
                 // printf("A player placed a bet >25 on an empty table\n");
 
-                // Generate a random number between 0 and 1
+                // Generate a random number, 0 or 1
                 srand((unsigned int)time(NULL));
                 if (rand() % (2) == 0)
                 {
-                    return -1; //Fold
+                    return FOLD;
                 }
                 else
                 {
@@ -59,7 +102,7 @@ int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet
             }
             else
             {
-                return 0;
+                return CALL;
             }
         }
         // Place a higher bid when the hand is decent to very good, table empty or not empty
@@ -73,7 +116,7 @@ int willYouRaise(struct Game *game, struct Player *player, unsigned int totalBet
         }
     }
     default:
-        return 1;
+        return FOLD;
     }
 }
 
